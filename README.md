@@ -29,7 +29,7 @@ The goal is to showcase:
 1. Clone the repository:
 ```bash
 git clone https://github.com/Bartosz-python/QA-web-scrapping-validation-tests.git
-cd qa-book-scraper
+cd qa-books-to-scrape
 ```
 
 2. Install dependencies:
