@@ -1,0 +1,2 @@
+- Write file logics
+- Add CD pipeline
