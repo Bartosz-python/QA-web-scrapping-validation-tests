@@ -1,0 +1,1 @@
+"""In this file there will be main logic of the unittests that will validate the scraper/scraper.py code in context of proper data fetching and logic"""

@@ -1,0 +1,1 @@
+"""In this file the output of the scraped data will be properly navigated to the provided .xslx file with proper format"""

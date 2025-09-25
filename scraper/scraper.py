@@ -1,0 +1,1 @@
+"""In this file will be the main logic of the playwright code in order to scrape relevant data from the designated website"""

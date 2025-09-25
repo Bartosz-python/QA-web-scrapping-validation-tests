@@ -1,0 +1,1 @@
+"""In this file there will be a main logic of the unittests that will check the scraper/validators.py functions"""
