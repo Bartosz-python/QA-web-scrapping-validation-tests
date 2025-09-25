@@ -7,7 +7,7 @@ The goal is to showcase:
 - **Web scraping** with Playwright
 - **Test automation** with Pytest
 - **Data validation & reporting** with pandas
-- **Modern Python (3.13)** practices
+- **Modern Python (3.11)** practices
 - **CI/CD readiness** with GitHub Actions
 
 ---
@@ -97,7 +97,7 @@ qa-books-to-scrape/
 
 ## 🛠 Tech Stack
 
-- **Python** 3.13.5  
+- **Python** 3.11 
 - **Playwright** – Browser automation  
 - **Pytest** – Test runner  
 - **pandas** – Excel export  
