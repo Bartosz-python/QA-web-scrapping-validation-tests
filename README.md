@@ -122,8 +122,8 @@ qa-books-to-scrape/
 
 ## 🧑‍💻 Author
 
-**Your Name**  
-📧 your.email@example.com  
+**Bartosz**  
+📧 Bartekfc41@gmail.com 
 🔗 [LinkedIn Profile](https://linkedin.com/in/bartosz-fabiańczyk-2093a92a4)
 
 ---
