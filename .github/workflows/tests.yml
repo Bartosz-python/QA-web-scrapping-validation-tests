@@ -1,4 +1,4 @@
-name: QA Book Scraper Tests
+name: QA Book Scraper CI
 
 on:
   push:
@@ -7,9 +7,8 @@ on:
     branches: [none] # main
 
 jobs:
-  tests:
+  setup:
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,24 +22,59 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          playwright install
+          python -m playwright install --with-deps
 
       - name: Prepare folders
+        shell: pwsh
         run: |
-          mkdir reports
-          mkdir outputs
+          New-Item -ItemType Directory -Force -Path reports
+          New-Item -ItemType Directory -Force -Path outputs
 
-      - name: Run tests
-        run: |
-          pytest --html=reports/report.html --self-contained-html
-
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
+  unit-tests:
+    runs-on: windows-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          name: pytest-html-report
-          path: reports/report.html
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run unit/validation tests
+        run: pytest tests/test_data_validation.py --html=reports/unit_report.html --self-contained-html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unit-html-report
+          path: reports/unit_report.html
 
-      - name: Upload Excel results
+  ui-tests:
+    runs-on: windows-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps
+      - name: Run Playwright UI tests (headless)
+        run: |
+          pytest tests/test_scraping.py \
+            --headed=false \
+            --browser=chromium \
+            --html=reports/ui_report.html \
+            --self-contained-html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-html-report
+          path: reports/ui_report.html
+
+  excel-output:
+    runs-on: windows-latest
+    needs: [unit-tests, ui-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload Excel outputs
         uses: actions/upload-artifact@v4
         with:
           name: excel-test-results
