@@ -3,3 +3,4 @@ pytest-html
 pytest-xdist
 playwright
 pandas
+openyxl
