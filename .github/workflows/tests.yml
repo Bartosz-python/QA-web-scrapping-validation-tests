@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13.5"
 
       - name: Install dependencies
         run: |
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13.5"
       - run: pip install -r requirements.txt
       - name: Run unit/validation tests
         run: pytest tests/test_data_validation.py --html=reports/unit_report.html --self-contained-html
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13.5"
       - run: |
           pip install -r requirements.txt
           python -m playwright install --with-deps
