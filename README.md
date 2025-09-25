@@ -35,7 +35,6 @@ cd qa-books-to-scrape
 2. Install dependencies:
 ```bash
 pip install -r requirements.txt
-playwright install
 ```
 
 ---
