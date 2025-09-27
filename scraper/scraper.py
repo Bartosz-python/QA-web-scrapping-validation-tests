@@ -5,20 +5,21 @@ class Browser:
     def __init__(self):
         """The function initializes a Python class with a base URL for scraping book information."""
 
-        self.BASE_URL = "https://books.toscrape.com/"
+        self.BASE_URL = "https://books.toscrape.com/" #TODO TEST that the page is accessible
 
     def get_book_urls(self) -> list[str]:
         # This code snippet is part of a Python class that is used for web scraping book information
         # from a website. Here's a breakdown of what the code is doing:
 
         books: List[ElementHandle] = self.page.query_selector_all("article.product_pod h3 a")
-        books_url: list[str] = [urljoin(self.BASE_URL, book_url.get_attribute("href")) if book_url else None for book_url in books] 
+        books_url: list[str] = [urljoin(self.BASE_URL, book_url.get_attribute("href")) if book_url else None for book_url in books] #TODO Add valid URL validator || Test and verify that validator works and the list contains valid URLs
         
         return books_url
     
     def main_scraper(self) -> None:
         #TODO Add rest of the items to scrape
         #TODO Add next page feature
+        #TODO Test and validate the scraped Data
         with sync_playwright() as p:
             self.browser = p.chromium.launch(headless = False)
             self.page: Page = self.browser.new_page()
