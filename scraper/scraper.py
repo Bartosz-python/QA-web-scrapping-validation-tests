@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from typing import List, Any
 from validator import url_validator
 import json
+from pathlib import Path
 class Browser:
     def __init__(self):
         """The function initializes a Python class with a base URL for scraping book information."""
@@ -19,10 +20,10 @@ class Browser:
         return books_urls
     
     def save_to_file(self, file):
-        folder = "outputs/" # add / in the end to indicate the file in the folder 
-        filename = "book_data.json"
+        folder: str = "outputs"
+        filename: str = "book_data.json"
+        filepath: Path = Path(folder, filename)
 
-        filepath = f"{folder}{filename}"
         with open(filepath, "w") as f: # makes book_data.json file in the outputs folder 
                 json.dump(file, f, indent = 2, ensure_ascii = False)
     
