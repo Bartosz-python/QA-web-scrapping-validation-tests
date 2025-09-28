@@ -1,1 +1,0 @@
-"""In this file there will be validator functions that will validate the fetched data"""
