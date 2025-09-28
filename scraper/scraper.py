@@ -21,40 +21,38 @@ class Browser:
     
     def save_to_file(self, file):
         folder: str = "outputs"
-        filename: str = "book_data.json"
-        filepath: Path = Path(folder, filename)
+        file_name: str = "book_data.json"
+        file_path: Path = Path(folder, file_name)
 
-        with open(filepath, "w") as f: # makes book_data.json file in the outputs folder 
+        with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
                 json.dump(file, f, indent = 2, ensure_ascii = False)
     
     def main_scraper(self) -> None:
-        #TODO Add rest of the items to scrape
         #TODO Add next page feature
         #TODO Test and validate the scraped Data
-        #TODO Write the scraped data to .json file which will be transormed to .xslx
         with sync_playwright() as p:
-            self.browser: Browser = p.chromium.launch(headless = False)
-            self.page: Page = self.browser.new_page()
+            self.browser = p.chromium.launch(headless = False)
+            self.page = self.browser.new_page()
             self.page.goto(self.BASE_URL, wait_until="domcontentloaded")
             
-            books_data: list[dict[str, Any]] = [] 
+            books_data: list[dict[str, Any]] = []    
             try:
                 for book_url in self.get_books_urls():
                     # Visits every book page and scrapes relevant info
                     self.page.goto(book_url)
 
                     title: str = self.page.query_selector("div.product_main h1").inner_text()
-                    description: str = 1
-                    price: str = 2
-                    upc: str = 3
-                    product_type: str = 4
-                    price_without_tax: str = 5
-                    pric_with_tax: str = 6
-                    tax: str = 7
-                    availability: str = 8
-                    number_of_reviews: str = 9
-                    star_rating: str = 10
-        
+                    description: str = self.page.query_selector(".product_page > p:nth-child(3)").inner_text()
+                    price: str = self.page.query_selector("p.price_color").inner_text()
+                    upc: str = self.page.query_selector("table.table-striped tr:first-child td").inner_text()
+                    product_type: str = self.page.query_selector("table.table-striped tr:nth-child(2) td").inner_text()
+                    price_without_tax: str = self.page.query_selector("table.table-striped tr:nth-child(3) td").inner_text()
+                    pric_with_tax: str = self.page.query_selector("table.table-striped tr:nth-child(4) td").inner_text()
+                    tax: str = self.page.query_selector("table.table-striped tr:nth-child(5) td").inner_text()
+                    availability: str = self.page.query_selector("table.table-striped tr:nth-child(6) td").inner_text()
+                    number_of_reviews: str = self.page.query_selector("table.table-striped tr:nth-child(7) td").inner_text()
+                    star_rating: str = self.page.query_selector("p.star-rating").get_attribute("class").split()[-1]
+
                     book_data: dict[str, Any] = {
                         "title": title,
                         "description": description,
@@ -69,8 +67,8 @@ class Browser:
                         "star_rating": star_rating
                     }
 
-                    books_data.append(book_data)
-
+                    books_data.append(book_data)      
+                
                 self.save_to_file(books_data)
 
             except Exception as e:
@@ -78,3 +76,5 @@ class Browser:
 
 if __name__ == "__main__":
     Browser().main_scraper()
+
+#! next page cannot be scraped due to list of existing books not updating after changing the page.
