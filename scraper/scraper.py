@@ -4,6 +4,7 @@ from typing import List, Any
 from validator import url_validator
 import json
 from pathlib import Path
+
 class Browser:
     def __init__(self):
         """The function initializes a Python class with a base URL for scraping book information."""
@@ -32,6 +33,7 @@ class Browser:
             
             books_data: list[dict[str, Any]] = []
             while True:
+
                 current_page_url = page.url
 
                 books = page.query_selector_all("article.product_pod h3 a")
@@ -68,7 +70,6 @@ class Browser:
                     }
 
                     books_data.append(book_data)
-                    print(title, book_url)
 
                 page.goto(current_page_url, wait_until = "domcontentloaded")
                 next_page_btn = page.query_selector("li.next a")
@@ -80,7 +81,6 @@ class Browser:
                 full_next_page_url = url_validator(urljoin(current_page_url, next_page_url))
 
                 page.goto(full_next_page_url, wait_until = "domcontentloaded")
-                page.wait_for_load_state("domcontentloaded")
 
             self.save_to_file(books_data)
 
