@@ -60,9 +60,10 @@ class Scraper:
 
         return Book(title, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, url)
     
-    def get_next_page_url(self):
+    def get_next_page_url(self) -> str:
         next_page_btn = self.page.query_selector("li.next a")
         if not next_page_btn:
+            print(f"Error with: {next_page_btn}")
             return False
         
         return url_validator(urljoin(self.page.url, next_page_btn.get_attribute("href")))
