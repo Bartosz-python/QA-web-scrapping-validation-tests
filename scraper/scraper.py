@@ -68,7 +68,7 @@ class Scraper:
         return url_validator(urljoin(self.page.url, next_page_btn.get_attribute("href")))
 
 class Browser:
-    def __init__(self, base_url = "https://books.toscrape.com/"):
+    def __init__(self, base_url: str = "https://books.toscrape.com/"):
 
         self.BASE_URL = base_url
     
