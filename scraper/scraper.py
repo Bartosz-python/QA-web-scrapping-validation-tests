@@ -7,7 +7,7 @@ from pathlib import Path
 
 class Book:
     """Book structure class"""
-    def __init__(self, title, price, upc, product_type, price_without_tax, price_with_tax,
+    def __init__(self, title, description, price, upc, product_type, price_without_tax, price_with_tax,
                 tax,
                 availability,
                 number_of_reviews,
@@ -16,6 +16,7 @@ class Book:
         ):
         
         self.title: str = title
+        self.description: str = description
         self.price: str = price
         self.upc: str = upc
         self.product_type: str = product_type
@@ -40,14 +41,21 @@ class Scraper:
         books = self.page.query_selector_all("article.product_pod h3 a")
         return [url_validator(urljoin(self.page.url, book_url.get_attribute("href"))) for book_url in books if book_url]
 
-    def scrape_book_data(self, url: str) -> Book:
+    def scrape_book_data(self, book_url: str) -> Book:
         '''The code snippet you provided is defining a method within the `Scraper` class called
         `scrape_book_data`. This method is responsible for scraping data from a specific book page
         given its URL.'''
 
-        self.page.goto(url, wait_until = "domcontentloaded")
+        self.page.goto(book_url, wait_until = "domcontentloaded")
 
         title: str = self.page.query_selector("div.product_main h1").inner_text()
+
+        description_element: str = self.page.query_selector("div#product_description + p")
+        if not description_element:
+            description = "No description for this one"
+        else:
+            description = description_element.inner_text()
+
         price: str = self.page.query_selector("p.price_color").inner_text()
         upc: str = self.page.query_selector("table.table-striped tr:first-child td").inner_text()
         product_type: str = self.page.query_selector("table.table-striped tr:nth-child(2) td").inner_text()
@@ -58,14 +66,13 @@ class Scraper:
         number_of_reviews: str = self.page.query_selector("table.table-striped tr:nth-child(7) td").inner_text()
         star_rating: str = self.page.query_selector("p.star-rating").get_attribute("class").split()[-1]
 
-        return Book(title, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, url)
+        return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url)
     
     def get_next_page_url(self) -> str:
         next_page_btn = self.page.query_selector("li.next a")
         if not next_page_btn:
-            print(f"Error with: {next_page_btn}")
-            return False
-        
+            print(f"No button available")
+            return
         return url_validator(urljoin(self.page.url, next_page_btn.get_attribute("href")))
 
 class Browser:
@@ -82,7 +89,6 @@ class Browser:
 
     def run(self) -> None:
         '''Main method that runs the script.'''
-        #! Add description back, as it was making an error with overflown text
 
         books_data: list[Book] = []
         with sync_playwright() as p:
