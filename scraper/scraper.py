@@ -46,6 +46,9 @@ class Scraper:
         `scrape_book_data`. This method is responsible for scraping data from a specific book page
         given its URL.'''
 
+        #TODO Write validators for these to check if they exist and handle properly if not
+        #TODO Write validators to check if they are proper type
+
         self.page.goto(book_url, wait_until = "domcontentloaded")
 
         title: str = self.page.query_selector("div.product_main h1").inner_text()
@@ -78,11 +81,13 @@ class Scraper:
 class Browser:
     def __init__(self, base_url: str = "https://books.toscrape.com/"):
 
-        self.BASE_URL = base_url
+        self.BASE_URL = base_url #TODO Check if it is accessible <-
     
     def save_to_file(self, books: list[Book], file_name: str) -> None:
         folder: str = "outputs"
         file_path: Path = Path(folder, file_name)
+
+        #TODO For now it handles only json but add a arguemnt to the method that allows to use any extension seperately from the filename
 
         with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
             json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
