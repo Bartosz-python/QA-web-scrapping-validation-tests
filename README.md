@@ -118,7 +118,7 @@ qa-books-to-scrape/
 
 ## 🏗 Future Improvements
 
-- Add support for scraping multiple pages  
+- Add support for scraping multiple pages ✅
 - Dockerize the project for easier deployment   
 - Add Allure reports for advanced test visualization  
 
