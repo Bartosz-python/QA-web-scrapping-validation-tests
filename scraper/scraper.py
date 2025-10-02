@@ -1,7 +1,7 @@
-from playwright.sync_api import sync_playwright, Page
+from playwright.sync_api import sync_playwright, Page, ElementHandle
 from urllib.parse import urljoin
 from typing import Any
-from validator import url_validator
+from validator import url_validator, is_proper_type, is_existing, convert_if_in_hashmap
 import json
 from pathlib import Path
 
@@ -32,6 +32,7 @@ class Book:
         return self.__dict__
     
 class Scraper:
+    """Responsible for the scraping feature by getting all the neccessary URLs, scrapping all the data and moving into next page"""
     def __init__(self, page: Page, base_url: str):
         self.page = page
         self.base_url = base_url
@@ -45,31 +46,37 @@ class Scraper:
         '''The code snippet you provided is defining a method within the `Scraper` class called
         `scrape_book_data`. This method is responsible for scraping data from a specific book page
         given its URL.'''
+        if url_validator(book_url):
 
-        #TODO Write validators for these to check if they exist and handle properly if not
-        #TODO Write validators to check if they are proper type
+            self.page.goto(book_url, wait_until = "domcontentloaded")
 
-        self.page.goto(book_url, wait_until = "domcontentloaded")
+            title: str = is_proper_type(is_existing(self.page.query_selector("div.product_main h1")), str)
+            description: str = is_proper_type(is_existing(self.page.query_selector("div#product_description + p")), str)
+            price: str = is_proper_type(is_existing(self.page.query_selector("p.price_color")), str)
+            upc: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:first-child td")), str)
+            product_type: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(2) td")), str)
+            price_without_tax: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(3) td")), str)
+            price_with_tax: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(4) td")), str)
+            tax: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(5) td")), str)
+            availability: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(6) td")), str)
+            number_of_reviews: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(7) td")), str)
 
-        title: str = self.page.query_selector("div.product_main h1").inner_text()
+            star_map = {
+                "One" : 1,
+                "Two" : 2,
+                "Three": 3,
+                "Four" : 4,
+                "Five" : 5
+            }
+            
+            star_rating_element: str = self.page.query_selector("p.star-rating")
+            if not star_rating_element:
+                star_rating = "No star rating for this book"
 
-        description_element: str = self.page.query_selector("div#product_description + p")
-        if not description_element:
-            description = "No description for this one"
-        else:
-            description = description_element.inner_text()
-
-        price: str = self.page.query_selector("p.price_color").inner_text()
-        upc: str = self.page.query_selector("table.table-striped tr:first-child td").inner_text()
-        product_type: str = self.page.query_selector("table.table-striped tr:nth-child(2) td").inner_text()
-        price_without_tax: str = self.page.query_selector("table.table-striped tr:nth-child(3) td").inner_text()
-        price_with_tax: str = self.page.query_selector("table.table-striped tr:nth-child(4) td").inner_text()
-        tax: str = self.page.query_selector("table.table-striped tr:nth-child(5) td").inner_text()
-        availability: str = self.page.query_selector("table.table-striped tr:nth-child(6) td").inner_text()
-        number_of_reviews: str = self.page.query_selector("table.table-striped tr:nth-child(7) td").inner_text()
-        star_rating: str = self.page.query_selector("p.star-rating").get_attribute("class").split()[-1]
-
-        return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url)
+            star_rating = convert_if_in_hashmap(is_proper_type(star_rating_element.get_attribute("class").split()[-1], str), star_map)
+                
+            return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url)
+        raise Exception("Given URL is invalid")
     
     def get_next_page_url(self) -> str:
         next_page_btn = self.page.query_selector("li.next a")
@@ -87,8 +94,6 @@ class Browser:
         folder: str = "outputs"
         file_path: Path = Path(folder, file_name)
 
-        #TODO For now it handles only json but add a arguemnt to the method that allows to use any extension seperately from the filename
-
         with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
             json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
 
@@ -104,10 +109,10 @@ class Browser:
             scraper = Scraper(page, page.url)
 
             while True:
-                current_page_url = page.url
+                current_page_url: str = page.url
                 try:
 
-                    books_urls = scraper.get_books_urls()
+                    books_urls: list[str] = scraper.get_books_urls()
 
                     for book_url in books_urls: # Visits every book page and scrapes relevant info
                         book = scraper.scrape_book_data(book_url)
