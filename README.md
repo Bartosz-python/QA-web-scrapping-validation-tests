@@ -90,11 +90,11 @@ qa-books-to-scrape/
 
 ## 📊 Example Excel Output
 
-| Title                  | Price | Rating |
-|----------------------|-------|--------|
-| The Great Gatsby     | 19.99 | 5      |
-| Alice in Wonderland  | -     | 4      |
 
+| Title                  | Price | Rating | Status |
+|----------------------|-------|--------|----------|
+| The Great Gatsby     | 19.99 | 5      | ✅ PASS |
+| Alice in Wonderland  | -     | 4      | ❌ FAIL |
 ---
 
 ## 🛠 Tech Stack
