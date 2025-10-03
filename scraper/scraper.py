@@ -1,9 +1,9 @@
-from playwright.sync_api import sync_playwright, Page, ElementHandle
+from playwright.sync_api import sync_playwright, Page
 from urllib.parse import urljoin
 from typing import Any
-from validator import url_validator, is_proper_type, is_existing, convert_if_in_hashmap
+from validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
 import json
-from pathlib import Path
+from excel_writer import json_to_excel
 
 class Book:
     """Book structure class"""
@@ -15,18 +15,18 @@ class Book:
                 url
         ):
         
-        self.title: str = title
-        self.description: str = description
-        self.price: str = price
-        self.upc: str = upc
-        self.product_type: str = product_type
-        self.price_without_tax: str = price_without_tax
-        self.price_with_tax: str = price_with_tax
-        self.tax: str = tax
-        self.availability: str = availability
-        self.number_of_reviews: str = number_of_reviews
-        self.star_rating: str = star_rating
-        self.url: str = url
+        self.title = title
+        self.description = description
+        self.price = price
+        self.upc = upc
+        self.product_type = product_type
+        self.price_without_tax = price_without_tax
+        self.price_with_tax = price_with_tax
+        self.tax = tax
+        self.availability = availability
+        self.number_of_reviews = number_of_reviews
+        self.star_rating = star_rating
+        self.url = url
 
     def to_dict(self) -> dict[str, Any]:
         return self.__dict__
@@ -43,9 +43,8 @@ class Scraper:
         return [url_validator(urljoin(self.page.url, book_url.get_attribute("href"))) for book_url in books if book_url]
 
     def scrape_book_data(self, book_url: str) -> Book:
-        '''The code snippet you provided is defining a method within the `Scraper` class called
-        `scrape_book_data`. This method is responsible for scraping data from a specific book page
-        given its URL.'''
+        """This method is responsible for scraping data from a specific book page
+        given its URL."""
         if url_validator(book_url):
 
             self.page.goto(book_url, wait_until = "domcontentloaded")
@@ -61,7 +60,7 @@ class Scraper:
             availability: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(6) td")), str)
             number_of_reviews: str = is_proper_type(is_existing(self.page.query_selector("table.table-striped tr:nth-child(7) td")), str)
 
-            star_map = {
+            star_map: dict[str, int] = {
                 "One" : 1,
                 "Two" : 2,
                 "Three": 3,
@@ -73,7 +72,7 @@ class Scraper:
             if not star_rating_element:
                 star_rating = "No star rating for this book"
 
-            star_rating = convert_if_in_hashmap(is_proper_type(star_rating_element.get_attribute("class").split()[-1], str), star_map)
+            star_rating = convert_to_int_if_in_hashmap(is_proper_type(star_rating_element.get_attribute("class").split()[-1], str), star_map)
                 
             return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url)
         raise Exception("Given URL is invalid")
@@ -90,17 +89,15 @@ class Browser:
 
         self.BASE_URL = base_url #TODO Check if it is accessible <-
     
-    def save_to_file(self, books: list[Book], file_name: str) -> None:
-        folder: str = "outputs"
-        file_path: Path = Path(folder, file_name)
-
+    def save_to_json(self, books: list[Book], file_path: str = "outputs/book_data.json") -> None:
         with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
             json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
 
     def run(self) -> None:
-        '''Main method that runs the script.'''
+        """Main method that runs the script."""
 
         books_data: list[Book] = []
+
         with sync_playwright() as p:
             browser = p.chromium.launch(headless = False)
             page = browser.new_page()
@@ -111,10 +108,9 @@ class Browser:
             while True:
                 current_page_url: str = page.url
                 try:
-
                     books_urls: list[str] = scraper.get_books_urls()
 
-                    for book_url in books_urls: # Visits every book page and scrapes relevant info
+                    for book_url in books_urls:
                         book = scraper.scrape_book_data(book_url)
                         books_data.append(book)
 
@@ -126,7 +122,9 @@ class Browser:
                     print(f"error: {e}")
                     break
 
-            self.save_to_file(books_data, "book_data.json")
+            self.save_to_json(books_data)
+
+        json_to_excel()
 
 if __name__ == "__main__":
     Browser().run()

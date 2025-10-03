@@ -4,3 +4,4 @@ pytest-xdist
 playwright
 pandas
 validators
+openpyxl

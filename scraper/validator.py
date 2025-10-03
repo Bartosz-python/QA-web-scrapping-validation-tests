@@ -18,7 +18,8 @@ def is_existing(element: str) -> str:
         return "No data available"
     return element.inner_text()
 
-def convert_if_in_hashmap(element: any, dict: dict) -> any:
+def convert_to_int_if_in_hashmap(element: any, dict: dict) -> any:
+    """For the project's sake this function converts the star rating from the string to int"""
     if element in dict:
         element = dict[element]
         return element
