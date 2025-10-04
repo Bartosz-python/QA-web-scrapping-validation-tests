@@ -59,7 +59,7 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install chromium
       - name: Run Playwright UI tests (headless)
-        run: pytest tests/test_scraping.py --browser chromium --html=reports/ui_report.html --self-contained-html
+        run: pytest tests/test_scraping.py --html=reports/ui_report.html --self-contained-html
       - uses: actions/upload-artifact@v4
         with:
           name: ui-html-report
