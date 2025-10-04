@@ -3,24 +3,17 @@ import pandas as pd
 import json
 from pathlib import Path
 from openpyxl.workbook import Workbook
-from scraper.scraper import Book
 
-class Save:
-    
-    def save_to_json(self, books: list[Book], file_path: str = "outputs/book_data.json") -> None:
-        with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
-            json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
+def save_json_to_excel(file_path_json: Path = "outputs/book_data.json", file_path_xlsx: Path = "outputs/book_data.xlsx", sheet_name: str = "Book Data") -> None:
+    """This code snippet is a Python function that reads data from a JSON file, converts it into a
+    pandas DataFrame, and then saves that DataFrame into an Excel file"""
+    try:
+        json_file = file_path_json
+        with open(json_file, "r", encoding = "utf-8") as file:
+            data = json.load(file)
 
-    def save_json_to_excel(self, file_path_json: Path = "outputs/book_data.json", file_path_xlsx: Path = "outputs/book_data.xlsx", sheet_name: str = "Book Data") -> None:
-        """This code snippet is a Python function that reads data from a JSON file, converts it into a
-        pandas DataFrame, and then saves that DataFrame into an Excel file"""
-        try:
-            json_file = file_path_json
-            with open(json_file, "r", encoding = "utf-8") as file:
-                data = json.load(file)
+        df1 = pd.DataFrame(data)
+        df1.to_excel(file_path_xlsx, index = False, sheet_name = sheet_name)
 
-            df1 = pd.DataFrame(data)
-            df1.to_excel(file_path_xlsx, index = False, sheet_name = sheet_name)
-
-        except Exception as e:
-            print(f"Error parsing json data to excel: {e}")
+    except Exception as e:
+        print(f"Error parsing json data to excel: {e}")

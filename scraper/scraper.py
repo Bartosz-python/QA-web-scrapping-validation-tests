@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from typing import Any
 from validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
 import json
-from excel_writer import Save
+from excel_writer import save_json_to_excel
 
 class Book:
     """Book structure class"""
@@ -118,9 +118,13 @@ class Browser:
                     print(f"error: {e}")
                     break
 
-            Save.save_to_json(books_data)
+            self.save_to_json(books_data)
 
-        Save.save_json_to_excel()
+        save_json_to_excel()
 
+    def save_to_json(self, books: list[Book], file_path: str = "outputs/book_data.json") -> None:
+        with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
+            json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
+    
 if __name__ == "__main__":
     Browser().run()
