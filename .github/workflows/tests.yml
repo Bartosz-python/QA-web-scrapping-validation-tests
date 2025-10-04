@@ -2,7 +2,7 @@ name: QA Book Scraper CI
 
 on:
   push:
-    branches: [none] # main
+    branches: [main] # main
   pull_request:
     branches: [none] # main
 
