@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from typing import Any
 from validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
 import json
-from excel_writer import json_to_excel
+from excel_writer import Save
 
 class Book:
     """Book structure class"""
@@ -83,15 +83,11 @@ class Scraper:
             print(f"No button available")
             return
         return url_validator(urljoin(self.page.url, next_page_btn.get_attribute("href")))
-
+    
 class Browser:
     def __init__(self, base_url: str = "https://books.toscrape.com/"):
 
         self.BASE_URL = base_url #TODO Check if it is accessible <-
-    
-    def save_to_json(self, books: list[Book], file_path: str = "outputs/book_data.json") -> None:
-        with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
-            json.dump([book.to_dict() for book in books if book], f, indent = 2, ensure_ascii = False)
 
     def run(self) -> None:
         """Main method that runs the script."""
@@ -122,9 +118,9 @@ class Browser:
                     print(f"error: {e}")
                     break
 
-            self.save_to_json(books_data)
+            Save.save_to_json(books_data)
 
-        json_to_excel()
+        Save.save_json_to_excel()
 
 if __name__ == "__main__":
     Browser().run()
