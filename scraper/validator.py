@@ -1,4 +1,6 @@
 import validators
+from typing import Optional
+from playwright.sync_api import ElementHandle
 
 def url_validator(full_url: str) -> str:
     """Function validating given URL."""
@@ -6,13 +8,13 @@ def url_validator(full_url: str) -> str:
         return full_url
     return False
 
-def is_proper_type(element: str, type: any) -> str:
+def is_proper_type(element: str, expected_type: type) -> str:
     """Checks if an element is proper for the project's data type"""
-    if not isinstance(element, type):
+    if not isinstance(element, expected_type):
         raise Exception("WRONG TYPE OF DATA !!!")
     return element
 
-def is_existing(element: str) -> str:
+def is_existing(element: Optional[ElementHandle]) -> str:
     """Return inner text if element exists, else fallback"""
     if not element:
         return "No data available"
@@ -23,7 +25,6 @@ def convert_to_int_if_in_hashmap(element: any, dict: dict) -> any:
     if element in dict:
         element = dict[element]
         return element
-    element = "Rating out of bounds"
-    return element
+    return "No such element in the hashmap"
 
 
