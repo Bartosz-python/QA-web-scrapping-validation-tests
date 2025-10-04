@@ -1,6 +1,7 @@
 import pytest
 import pytest_html
 import xdist
+from playwright.sync_api import sync_playwright
 from scraper.validator import *
 from tests.confest import *
 
@@ -27,14 +28,17 @@ def test_is_proper_type_invalid() -> any:
 
 @pytest.mark.smoke
 @pytest.mark.validation
-def test_is_existing(page):
-    page.goto("https://example.com")
+def test_is_existing():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless = True)
+        page = browser.new_page()
+        page.goto("https://example.com")
 
-    element = page.query_selector("h1")
-    assert is_existing(element) == "Example Domain"
+        element = page.query_selector("h1")
+        assert is_existing(element) == "Example Domain"
 
-    element2 = page.query_selector("h2")
-    assert is_existing(element2) == "No data available"
+        element2 = page.query_selector("h2")
+        assert is_existing(element2) == "No data available"
 
 @pytest.mark.smoke
 def test_convert_to_int_if_in_hashmap_valid():
