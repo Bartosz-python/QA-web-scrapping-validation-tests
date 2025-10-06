@@ -26,5 +26,3 @@ def convert_to_int_if_in_hashmap(element: any, dict: dict) -> any:
         element = dict[element]
         return element
     return "No such element in the hashmap"
-
-

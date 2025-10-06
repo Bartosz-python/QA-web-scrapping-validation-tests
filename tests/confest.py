@@ -1,5 +1,4 @@
 import pytest
-from playwright.sync_api import sync_playwright, Browser, Page
 
 def url_test_data() -> list:
     return [

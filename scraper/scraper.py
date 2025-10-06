@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from typing import Any
 from validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
 import json
-from excel_writer import save_json_to_excel
+from excel_writer import convert_json_to_excel
 
 class Book:
     """Book structure class"""
@@ -12,7 +12,8 @@ class Book:
                 availability,
                 number_of_reviews,
                 star_rating,
-                url
+                url,
+                status
         ):
         
         self.title = title
@@ -27,6 +28,7 @@ class Book:
         self.number_of_reviews = number_of_reviews
         self.star_rating = star_rating
         self.url = url
+        self.status = status
 
     def to_dict(self) -> dict[str, Any]:
         return self.__dict__
@@ -67,14 +69,26 @@ class Scraper:
                 "Four" : 4,
                 "Five" : 5
             }
-            
+             
             star_rating_element: str = self.page.query_selector("p.star-rating")
             if not star_rating_element:
                 star_rating = "No star rating for this book"
 
             star_rating = convert_to_int_if_in_hashmap(is_proper_type(star_rating_element.get_attribute("class").split()[-1], str), star_map)
-                
-            return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url)
+            status = "Fail 🤷‍♂️" if any(item == "No data available" for item in [
+                                        title,
+                                        description,
+                                        price, 
+                                        upc, 
+                                        product_type, 
+                                        price_without_tax, 
+                                        price_without_tax, 
+                                        tax, 
+                                        availability, 
+                                        number_of_reviews, 
+                                        star_rating]) else "Pass ✔" 
+            
+            return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url, status)
         raise Exception("Given URL is invalid")
     
     def get_next_page_url(self) -> str:
@@ -120,7 +134,7 @@ class Browser:
 
             self.save_to_json(books_data)
 
-        save_json_to_excel()
+        convert_json_to_excel()
 
     def save_to_json(self, books: list[Book], file_path: str = "outputs/book_data.json") -> None:
         with open(file_path, "w", encoding = "utf-8") as f: # makes book_data.json file in the outputs folder 
