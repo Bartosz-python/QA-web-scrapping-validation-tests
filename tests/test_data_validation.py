@@ -2,7 +2,7 @@ import pytest
 import pytest_html
 import xdist
 from playwright.sync_api import sync_playwright
-from scraper.validator import *
+from src.validator import *
 from tests.confest import *
 
 @pytest.mark.parametrize("url, expected", url_test_data())

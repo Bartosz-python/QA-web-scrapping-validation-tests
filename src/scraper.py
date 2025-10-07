@@ -1,9 +1,9 @@
 from playwright.sync_api import sync_playwright, Page
 from urllib.parse import urljoin
 from typing import Any
-from validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
+from src.validator import url_validator, is_proper_type, is_existing, convert_to_int_if_in_hashmap
 import json
-from excel_writer import convert_json_to_excel
+from src.excel_writer import convert_json_to_excel
 
 class Book:
     """Book structure class"""
