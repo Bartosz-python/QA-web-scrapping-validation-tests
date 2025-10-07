@@ -67,7 +67,7 @@ After each run, reports are generated in:
 
 ```bash
 qa-books-to-scrape/
-├── scraper/
+├── src/
 │   ├── __init__.py         # Make the files Python packages
 │   ├── scraper.py          # Playwright scraping logic
 │   ├── validator.py       # Data validation rules
