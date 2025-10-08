@@ -58,7 +58,6 @@ pytest -n auto
 ```
 
 After each run, reports are generated in:
-- **`outputs/`** → Excel test results  
 - **`reports/`** → HTML test report  
 
 ---
