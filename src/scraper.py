@@ -86,7 +86,7 @@ class Scraper:
                                         tax, 
                                         availability, 
                                         number_of_reviews, 
-                                        star_rating]) else "Pass ✔" 
+                                        star_rating]) else "Pass ✔"
             
             return Book(title, description, price, upc, product_type, price_without_tax, price_with_tax, tax, availability, number_of_reviews, star_rating, book_url, status)
         raise Exception("Given URL is invalid")

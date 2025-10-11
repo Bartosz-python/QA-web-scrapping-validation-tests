@@ -3,7 +3,7 @@ import pytest_html
 import xdist
 from playwright.sync_api import sync_playwright
 from src.validator import *
-from tests.confest import *
+from tests.conftest import *
 
 @pytest.mark.parametrize("url, expected", url_test_data())
 @pytest.mark.smoke
